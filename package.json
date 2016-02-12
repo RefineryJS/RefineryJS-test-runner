@@ -6,7 +6,7 @@
     "test-refineryjs": "./bin/run.js"
   },
   "scripts": {
-    "lint": "eslint src/** test/**",
+    "lint": "eslint src/**",
     "unit": "npm run build && node bin/run.js",
     "test": "npm run lint && npm run unit",
     "build": "babel src --out-dir bin",
@@ -39,6 +39,6 @@
     "babel-core": "^6.5.1",
     "chalk": "^1.1.1",
     "mkdirp": "^0.5.1",
-    "refineryjs": "^0.1.1"
+    "refineryjs": "^0.2.2"
   }
 }
