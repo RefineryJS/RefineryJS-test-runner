@@ -1,0 +1,5 @@
+const evil = 'Is it really evil?'
+
+doSomething(evil)
+
+evil.spread(Infinity)
