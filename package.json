@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/refineryjs/test-runner.git"
+    "url": "https://github.com/refineryjs/refineryjs-test-runner.git"
   },
   "keywords": [
     "refineryjs"
@@ -22,9 +22,9 @@
   "author": "HyeonuPark",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/refineryjs/test-runner/issues"
+    "url": "https://github.com/refineryjs/refineryjs-test-runner/issues"
   },
-  "homepage": "https://github.com/refineryjs/test-runner#readme",
+  "homepage": "https://github.com/refineryjs/refineryjs-test-runner#readme",
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-core": "^6.5.1",
