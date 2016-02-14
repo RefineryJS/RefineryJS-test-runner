@@ -1,3 +1,5 @@
+// Tiny plugin for test
+
 export default function nicePlugin ({types: t}) {
   return {
     visitor: {

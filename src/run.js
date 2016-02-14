@@ -5,6 +5,7 @@ import {readdirSync, readFile, writeFile} from 'fs'
 
 import {transform} from 'babel-core'
 import chalk from 'chalk'
+import {sync as rimraf} from 'rimraf'
 import {sync as mkdirp} from 'mkdirp'
 
 import plugin from './babel-plugin'
@@ -21,6 +22,7 @@ const logPath = path.join(cwd, 'log', 'integration')
 const testRootPath = path.join(cwd, 'test', 'integration')
 const mapTests = new Map()
 
+rimraf(logPath)
 mkdirp(logPath)
 
 const onTestFile = (name, type) => (err, data) => {
