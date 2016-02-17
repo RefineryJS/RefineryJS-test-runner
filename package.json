@@ -1,6 +1,6 @@
 {
   "name": "refineryjs-test-runner",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "RefineryJS test runner",
   "bin": {
     "test-refineryjs": "./bin/run.js"
