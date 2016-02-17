@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import 'babel-register'
+
 import path from 'path'
 import {readdirSync, readFile, writeFile} from 'fs'
 

@@ -3,7 +3,7 @@ import path from 'path'
 import refine from 'refineryjs'
 
 const cwd = process.cwd()
-const pluginPath = path.join(cwd, 'bin', 'index.js')
+const pluginPath = path.join(cwd, 'src', 'index.js')
 const initPath = path.join(cwd, 'test', 'integration', 'init.js')
 
 const plugin = require(pluginPath).default
