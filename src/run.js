@@ -71,7 +71,7 @@ const onTestFile = (name, type) => (err, data) => {
 }
 
 for (let testName of readdirSync(testRootPath)) {
-  const inputPath = path.join(testRootPath, testName, 'input.rjs')
+  const inputPath = path.join(testRootPath, testName, 'input.refjs')
   const expectPath = path.join(testRootPath, testName, 'expect.js')
 
   readFile(inputPath, 'utf8', onTestFile(testName, 'input'))
