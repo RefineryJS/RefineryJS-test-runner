@@ -3,12 +3,10 @@
 import 'babel-register'
 
 import path from 'path'
-import {readdirSync, readFile, writeFile} from 'fs'
+import {remove, mkdirs, readdir, stat, readFile, writeFile} from 'fs-promise'
 
 import {transform} from 'babel-core'
 import chalk from 'chalk'
-import {sync as rimraf} from 'rimraf'
-import {sync as mkdirp} from 'mkdirp'
 
 import plugin from './babel-plugin'
 
@@ -22,58 +20,50 @@ const cwd = process.cwd()
 
 const logPath = path.join(cwd, 'log', 'integration')
 const testRootPath = path.join(cwd, 'test', 'integration')
-const mapTests = new Map()
 
-rimraf(logPath)
-mkdirp(logPath)
+async function run () {
+  await remove(logPath)
+  await mkdirs(logPath)
 
-const onTestFile = (name, type) => (err, data) => {
-  if (err) {
-    // Safely ignore invalide file structure
-    return
-  }
+  const listTests = await readdir(testRootPath)
+  await Promise.all(listTests.map(async (testName) => {
+    const casePath = path.join(testRootPath, testName)
+    const fsStat = await stat(casePath)
+    if (!fsStat.isDirectory()) {
+      return
+    }
 
-  const pair = mapTests.get(name)
-  if (!pair) {
-    mapTests.set(name, {[type]: data})
-    return
-  }
+    const inputSrc = await readFile(path.join(casePath, 'input.refjs'))
+    const expectSrc = await readFile(path.join(casePath, 'expect.js'))
+    let init
+    try {
+      init = require(path.join(casePath, 'init.js'))
+    } catch (err) {
+      init = {}
+    }
 
-  pair[type] = data
+    const input = transform(inputSrc, {
+      ...babelOption,
+      filename: `${testName}.refjs`,
+      plugins: [plugin(init)],
+    }).code
 
-  const {input, expect} = pair
-  if (!input || !expect) {
-    // Either input or expect file data is not arrived
-    return
-  }
+    const expect = transform(expectSrc, {
+      ...babelOption,
+      filename: `${testName}.js`,
+    }).code
 
-  const inputCode = transform(input, {
-    ...babelOption,
-    filename: `${name}.rjs`,
-    plugins: [plugin],
-  }).code
-
-  const expectCode = transform(expect, {
-    ...babelOption,
-    filename: `${name}.js`,
-  }).code
-
-  if (inputCode === expectCode) {
-    console.log(`${chalk.green(name)} - passed`)
-  } else {
-    console.log(`${chalk.red(name)} - failed`)
-    writeFile(path.join(logPath, `${name}.js`), inputCode, err => {
-      if (err) {
-        throw err
-      }
-    })
-  }
+    if (input === expect) {
+      console.log(`${chalk.green(testName)} - passed`)
+    } else {
+      console.log(`${chalk.red(testName)} - failed`)
+      await writeFile(path.join(logPath, `${testName}.js`), input)
+    }
+  }))
 }
 
-for (let testName of readdirSync(testRootPath)) {
-  const inputPath = path.join(testRootPath, testName, 'input.refjs')
-  const expectPath = path.join(testRootPath, testName, 'expect.js')
-
-  readFile(inputPath, 'utf8', onTestFile(testName, 'input'))
-  readFile(expectPath, 'utf8', onTestFile(testName, 'expect'))
-}
+run().then(function success () {
+  console.log('RefineryJS integration done')
+}, function error (err) {
+  throw err
+})

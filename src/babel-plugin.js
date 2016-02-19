@@ -9,31 +9,33 @@ const initPath = path.join(cwd, 'test', 'integration', 'init.js')
 const plugin = require(pluginPath).default
 
 if (typeof plugin !== 'function') {
-  throw new Error('RefineryJS integration test - "export default" value must be a function')
+  throw new Error('RefineryJS integration test - "export default" of index.js must be a function')
 }
 
-let initResult = {}
+let initResult
 try {
   initResult = require(initPath)
 } catch (err) {
-  console.log('\nRefineryJS integration test - Missing init.js\n')
+  initResult = {}
 }
 
-const {dependencies = [], option} = initResult
+const {
+  dependencies: sharedDependencies = [],
+  option: sharedOption,
+} = initResult
 
-export default function RefineryJS ({types: t}) {
-  return {
-    visitor: {
-      Program (path) {
-        refine(t, path, [
-          ...dependencies,
-          {
-            name: 'this-plugin',
-            init: plugin,
-            option,
-          },
-        ])
-      },
+export default ({dependencies = [], option}) => ({types}) => ({
+  visitor: {
+    Program (path) {
+      refine(types, path, [
+        ...sharedDependencies,
+        ...dependencies,
+        [
+          'this-plugin',
+          plugin,
+          {...sharedOption, ...option},
+        ],
+      ])
     },
-  }
-}
+  },
+})
